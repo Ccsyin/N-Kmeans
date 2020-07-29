@@ -15,19 +15,19 @@ public class Main {
 
         //生成1000个随机点
 //        double x,y;
-//        ArrayList<Point> q= new ArrayList<Point>();
+//        ArrayList<PointN> q= new ArrayList<PointN>();
 //        Random rd = new Random();
 //        for (int i = 0; i <1000 ; i++) {
-//            Point a = new Point(rd.nextInt(100),rd.nextInt(100));
+//            PointN a = new PointN(rd.nextInt(100),rd.nextInt(100));
 //            q.add(a);
 //        }
 //        WriteData.toFile2(q,"/Users/chenshiyin/IdeaProjects/k-means/random.txt");
 
         //从文件中读取点集合
-        ArrayList<Point> points = new ArrayList<Point>();
-        ArrayList<Point> pointsCopy = new ArrayList<Point>();
+        ArrayList<PointN> points = new ArrayList<PointN>();
+        ArrayList<PointN> pointsCopy = new ArrayList<PointN>();
         ReadData read = new ReadData();
-        String fileName="/Users/chenshiyin/IdeaProjects/k-means/140-2.txt";
+        String fileName="/Users/chenshiyin/IdeaProjects/k-means/threecircles.txt";
         points = read.read(fileName);
         pointsCopy = read.read(fileName);
         sum=read.sum(fileName);
@@ -44,43 +44,66 @@ public class Main {
         k.setPoints(points);
 
         //初始化
-        ArrayList<Point> initialCenter = new ArrayList<Point>();
-        ArrayList<ArrayList<Point>> cluster = new ArrayList<ArrayList<Point>>();
-        ArrayList<ArrayList<Point>> initialKcluster = new ArrayList<ArrayList<Point>>();
+        ArrayList<PointN> initialCenter = new ArrayList<PointN>();
+        ArrayList<ArrayList<PointN>> cluster = new ArrayList<ArrayList<PointN>>();
+        ArrayList<ArrayList<PointN>> initialKcluster = new ArrayList<ArrayList<PointN>>();
         //初始中心点
         initialCenter=k.initialCenter(points,num);
-        System.out.println("初始中心种子："+initialCenter);
+        System.out.println("初始中心种子：");
+        for (PointN pointN : initialCenter) {
+            PointN.toString(pointN);
+        }
+
+
         //初始空簇
         cluster = k.initialCluster(points,initialCenter);
         //初始分类集合
         initialKcluster = k.initialKcluster(cluster,points,num);
+//        for (int i = 0; i < num; i++) {
+//            System.out.println("初始分类：");
+//            System.out.println("第"+(i+1)+"类：");
+//            for (int j = 0; j < initialKcluster.get(i).size(); j++) {
+//                    PointN.toString(initialKcluster.get(i).get(j));
+//            }
+//
+//        }
 
 
-        ArrayList<Point> preCenter = initialCenter;
-        ArrayList<Point> updateKcenter = new ArrayList<Point>();
-        ArrayList<ArrayList<Point>> updateKcluster = new ArrayList<ArrayList<Point>>();
+        ArrayList<PointN> preCenter = initialCenter;
+        ArrayList<PointN> updateKcenter = new ArrayList<PointN>();
+        ArrayList<ArrayList<PointN>> updateKcluster = new ArrayList<ArrayList<PointN>>();
         updateKcenter = k.updateKcenter(initialKcluster,num);
-
 
         //迭代
         for (int i=1;i<maxClusterTimes;i++){
             int j = 1;
             while (k.isKpointChange(preCenter,updateKcenter)){
-                System.out.println("第"+(j+1)+"次中心种子："+updateKcenter);
+                System.out.println("第"+(j+i)+"次中心种子：");
+                for (PointN pointN : updateKcenter) {
+                    PointN.toString(pointN);
+                }
                 updateKcluster=k.updateKcluster(cluster,points,updateKcenter);
                 preCenter = updateKcenter;
                 updateKcenter = k.updateKcenter(updateKcluster,num);
                 j++;
             }
-
         }
+        if(updateKcluster.size() != num)
+            System.out.println("您的集合不适合分为"+num+"类，已将数据分为"+updateKcluster.size()+"类");
 
         //输出最后分类结果
-        System.out.println("-----------最后归类结果-----------");
-        for (int i=0;i<num;i++){
-            System.out.println("第"+(i+1)+"类为：");
-            System.out.println(cluster.get(i));
-        }
-        WriteData.toFile(cluster,"/Users/chenshiyin/IdeaProjects/k-means/k-means.txt");
+//        System.out.println("-----------最后归类结果-----------");
+//        for (int i=0;i<num;i++){
+//            System.out.println("第"+(i+1)+"类为：");
+//            for (PointN pointN : updateKcluster.get(i)) {
+//                PointN.toString(pointN);
+//            }
+//        }
+//        for (int i = 0; i < num; i++) {
+//            ArrayList<PointN> classCluster = new ArrayList<PointN>();
+//            classCluster= updateKcluster.get(i);
+//            WriteData.toFile2(classCluster,"/Users/chenshiyin/IdeaProjects/k-means/k-means-result"+i+".txt");
+//        }
+        WriteData.toFile(cluster,"/Users/chenshiyin/IdeaProjects/k-means/k-means-threecircles.txt");
     }
 }
